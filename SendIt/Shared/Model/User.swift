@@ -11,4 +11,20 @@ struct User: Codable, Identifiable {
     let id: Int
     let email: String
     let phoneNumber: String
+    let isCourier: Bool
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.email = try container.decode(String.self, forKey: .email)
+        self.phoneNumber = try container.decode(String.self, forKey: .phoneNumber)
+        self.isCourier = try container.decode(Bool.self, forKey: .isCourier)
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case email
+        case phoneNumber = "phone_number"
+        case isCourier = "is_courier"
+    }
 }

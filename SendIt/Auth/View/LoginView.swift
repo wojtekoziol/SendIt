@@ -14,6 +14,7 @@ struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var phoneNumber = ""
+    @State private var asCourier = false
 
     var mainText: String {
         register ? "Register" : "Login"
@@ -34,12 +35,14 @@ struct LoginView: View {
             if register {
                 TextField("Phone number", text: $phoneNumber)
                     .keyboardType(.phonePad)
+
+                Toggle("Register as a courier", isOn: $asCourier)
             }
 
             Button(mainText) {
                 Task {
                     if register {
-                        await userVM.register(email: email, password: password, phoneNumber: phoneNumber)
+                        await userVM.register(email: email, password: password, phoneNumber: phoneNumber, asCourier: asCourier)
                     } else {
                         await userVM.login(email: email, password: password)
                     }

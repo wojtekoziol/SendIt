@@ -17,6 +17,7 @@ struct AuthView: View {
             } else {
                 if let user = userVM.user {
                     Text(user.email)
+                    Text(user.isCourier ? "Courier" : "User")
                 }
             }
         }

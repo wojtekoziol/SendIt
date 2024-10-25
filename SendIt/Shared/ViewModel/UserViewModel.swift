@@ -12,14 +12,8 @@ import Foundation
 
     private(set) var user: User?
 
-    var decoder: JSONDecoder {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return decoder
-    }
-
-    func register(email: String, password: String, phoneNumber: String) async {
-        guard let url = URL(string: "\(authApiEndpoint)/\(email)/\(password)/\(phoneNumber)") else { return }
+    func register(email: String, password: String, phoneNumber: String, asCourier: Bool) async {
+        guard let url = URL(string: "\(authApiEndpoint)/\(email)/\(password)/\(phoneNumber)/\(asCourier)") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -27,10 +21,9 @@ import Foundation
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
 
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode == 200 else { return }
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return }
 
-            
-            user = try decoder.decode(User.self, from: data)
+            user = try JSONDecoder().decode(User.self, from: data)
         } catch {
             print("Error: \(error.localizedDescription)")
         }
@@ -44,10 +37,9 @@ import Foundation
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return }
 
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode == 200 else { return }
-
-            user = try decoder.decode(User.self, from: data)
+            user = try JSONDecoder().decode(User.self, from: data)
         } catch {
             print("Error: \(error.localizedDescription)")
         }
