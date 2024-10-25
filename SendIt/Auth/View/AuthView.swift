@@ -15,10 +15,7 @@ struct AuthView: View {
             if userVM.user == nil {
                 LoginView()
             } else {
-                if let user = userVM.user {
-                    Text(user.email)
-                    Text(user.isCourier ? "Courier" : "User")
-                }
+                NavigationView()
             }
         }
         .environment(userVM)

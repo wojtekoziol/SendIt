@@ -13,6 +13,13 @@ struct User: Codable, Identifiable {
     let phoneNumber: String
     let isCourier: Bool
 
+    init(id: Int, email: String, phoneNumber: String, isCourier: Bool) {
+        self.id = id
+        self.email = email
+        self.phoneNumber = phoneNumber
+        self.isCourier = isCourier
+    }
+
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(Int.self, forKey: .id)
@@ -27,4 +34,6 @@ struct User: Codable, Identifiable {
         case phoneNumber = "phone_number"
         case isCourier = "is_courier"
     }
+
+    static let preview = User(id: 1, email: "name@mail.com", phoneNumber: "791234567", isCourier: true)
 }

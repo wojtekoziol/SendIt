@@ -8,12 +8,12 @@
 import Foundation
 
 @Observable class UserViewModel {
-    private let authApiEndpoint = "http://localhost:3000/auth"
+    private let authBaseUrl = "http://localhost:3000/auth"
 
     private(set) var user: User?
 
     func register(email: String, password: String, phoneNumber: String, asCourier: Bool) async {
-        guard let url = URL(string: "\(authApiEndpoint)/\(email)/\(password)/\(phoneNumber)/\(asCourier)") else { return }
+        guard let url = URL(string: "\(authBaseUrl)/\(email)/\(password)/\(phoneNumber)/\(asCourier)") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -30,7 +30,7 @@ import Foundation
     }
 
     func login(email: String, password: String) async {
-        guard let url = URL(string: "\(authApiEndpoint)/\(email)/\(password)/") else { return }
+        guard let url = URL(string: "\(authBaseUrl)/\(email)/\(password)/") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -43,5 +43,11 @@ import Foundation
         } catch {
             print("Error: \(error.localizedDescription)")
         }
+    }
+
+    static var preview: UserViewModel {
+        let vm = UserViewModel()
+        vm.user = User.preview
+        return vm
     }
 }
