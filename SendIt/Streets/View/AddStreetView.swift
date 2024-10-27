@@ -13,15 +13,28 @@ struct AddStreetView: View {
 
     @State private var streetName = ""
 
-    var body: some View {
-        TextField("New street", text: $streetName)
+    var body: some View {        
+        VStack(alignment: .leading) {
+            Text("Add new street")
+                .font(.title)
 
-        Button("Add street") {
-            Task {
-                await streetsVM.addStreet(streetName)
-                dismiss()
+            TextField("Street name", text: $streetName)
+                .textFieldStyle(.roundedBorder)
+
+            Button("Add street") {
+                Task {
+                    await streetsVM.addStreet(streetName)
+                    dismiss()
+                }
             }
+            .buttonStyle(.borderedProminent)            
         }
+        .padding()
+        .overlay(
+            GeometryReader { geometry in
+                Color.clear.preference(key: InnerHeightPreferenceKey.self, value: geometry.size.height)
+            }
+        )
     }
 }
 

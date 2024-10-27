@@ -12,6 +12,10 @@ import Foundation
 
     private(set) var streets = [Street]()
 
+    var sortedStreets: [Street] {
+        streets.sorted { $0.name < $1.name }
+    }
+
     func fetchStreets() async {
         guard let url = URL(string: "\(streetsBaseUrl)") else { return }
 
@@ -45,5 +49,11 @@ import Foundation
         } catch {
             print("Error: \(error.localizedDescription)")
         }
+    }
+
+    static var preview: StreetsViewModel {
+        let vm = StreetsViewModel()
+        vm.streets = [.init(id: 0, name: "Sosnowiecka", courierId: 0), .init(id: 1, name: "Miarki", courierId: 1)]
+        return vm
     }
 }

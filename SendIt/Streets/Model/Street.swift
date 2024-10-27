@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Street: Codable, Identifiable {
+struct Street: Codable, Hashable, Identifiable {
     let id: Int
     let name: String
     let courierId: Int

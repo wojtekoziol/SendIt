@@ -10,9 +10,16 @@ import SwiftUI
 struct NavigationView: View {
     @Environment(UserViewModel.self) private var userVM
 
+    @State private var streetsVM = StreetsViewModel()
+
     var body: some View {
         if let user = userVM.user {
             TabView {
+                PackagesView()
+                    .tabItem {
+                        Label("Packages", systemImage: "shippingbox.fill")
+                    }
+
                 if user.isCourier {
                     StreetsView()
                         .tabItem {
@@ -20,6 +27,7 @@ struct NavigationView: View {
                         }
                 }
             }
+            .environment(streetsVM)
         }
     }
 }

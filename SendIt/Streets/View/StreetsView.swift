@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct StreetsView: View {
-    @State private var streetsVM = StreetsViewModel()
+    @Environment(StreetsViewModel.self) private var streetsVM
+
     @State private var showingAddSheet = false
+    @State private var sheetHeight = CGFloat.zero
 
     var body: some View {
         NavigationStack {
@@ -32,7 +34,10 @@ struct StreetsView: View {
         }
         .sheet(isPresented: $showingAddSheet) {
             AddStreetView()
+                .presentationDetents([.height(sheetHeight)])
+                .presentationDragIndicator(.visible)
                 .environment(streetsVM)
+                .onPreferenceChange(InnerHeightPreferenceKey.self) { sheetHeight = $0 }
         }
         .task {
             await streetsVM.fetchStreets()
@@ -42,4 +47,5 @@ struct StreetsView: View {
 
 #Preview {
     StreetsView()
+        .environment(StreetsViewModel())
 }
