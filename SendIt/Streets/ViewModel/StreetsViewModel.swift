@@ -51,6 +51,25 @@ import Foundation
         }
     }
 
+    func getStreet(for streetId: Int) async -> Street? {
+        guard let url = URL(string: "\(streetsBaseUrl)/\(streetId)") else { return nil }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }
+
+            let street = try JSONDecoder().decode(Street.self, from: data)
+            return street
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
     static var preview: StreetsViewModel {
         let vm = StreetsViewModel()
         vm.streets = [.init(id: 0, name: "Sosnowiecka", courierId: 0), .init(id: 1, name: "Miarki", courierId: 1)]

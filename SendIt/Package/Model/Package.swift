@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Package: Codable, Identifiable {
+struct Package: Codable, Comparable, Identifiable {
     let id: Int
     let receiverFirstName: String
     let receiverLastName: String
@@ -43,8 +43,8 @@ struct Package: Codable, Identifiable {
         self.senderId = try container.decode(Int.self, forKey: .senderId)
         self.weight = try container.decode(Double.self, forKey: .weight)
         self.maxSize = try container.decode(Double.self, forKey: .maxSize)
-        let statusInt = try container.decode(Int.self, forKey: .status)
-        self.status = .init(status: statusInt)
+        let statusId = try container.decode(Int.self, forKey: .status)
+        self.status = .init(statusId: statusId)
         self.courierId = try container.decode(Int.self, forKey: .courierId)
         self.pickupCode = try container.decode(Int.self, forKey: .pickupCode)
         self.receiverId = try container.decodeIfPresent(Int.self, forKey: .receiverId)
@@ -64,6 +64,10 @@ struct Package: Codable, Identifiable {
         case receiverId = "receiver_id"
     }
 
+    static func < (lhs: Package, rhs: Package) -> Bool {
+        lhs.status < rhs.status
+    }
+
     func isReceiver(userId: Int) -> Bool {
         userId == receiverId
     }
@@ -71,19 +75,28 @@ struct Package: Codable, Identifiable {
     static let preview = Package(id: 54321, receiverFirstName: "Wojtek", receiverLastName: "Kozioł", streetId: 0, senderId: 1, weight: 0.3, maxSize: 12.5, status: .inTransit, courierId: 1, pickupCode: 3241, receiverId: 0)
 }
 
-enum PackageStatus: Codable, CustomStringConvertible {
+enum PackageStatus: CaseIterable, Codable, Comparable, CustomStringConvertible {
     case created
     case inTransit
     case pickupPoint
     case delivered
 
-    init(status: Int) {
-        switch status {
+    init(statusId: Int) {
+        switch statusId {
         case 0: self = .created
         case 1: self = .inTransit
         case 2: self = .pickupPoint
         case 3: self = .delivered
         default: self = .created
+        }
+    }
+
+    var statusId: Int {
+        switch self {
+        case .created: return 0
+        case .inTransit: return 1
+        case .pickupPoint: return 2
+        case .delivered: return 3
         }
     }
 

@@ -22,7 +22,7 @@ struct PackagesView: View {
 
     var sentPackages: [Package] {
         guard let userId = userVM.user?.id else { return packageVM.userPackages }
-        return packageVM.userPackages.filter { !$0.isReceiver(userId: userId) }
+        return packageVM.userPackages.filter { !$0.isReceiver(userId: userId) }.sorted()
     }
 
     var body: some View {

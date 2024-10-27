@@ -17,10 +17,15 @@ struct NavigationView: View {
             TabView {
                 PackagesView()
                     .tabItem {
-                        Label("Packages", systemImage: "shippingbox.fill")
+                        Label("Packages", systemImage: "shippingbox")
                     }
 
                 if user.isCourier {
+                    CourierView()
+                        .tabItem {
+                            Label("To deliver", systemImage: "truck.box")
+                        }
+
                     StreetsView()
                         .tabItem {
                             Label("Streets", systemImage: "map")
