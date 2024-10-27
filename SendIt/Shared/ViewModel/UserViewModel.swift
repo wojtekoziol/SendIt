@@ -45,6 +45,24 @@ import Foundation
         }
     }
 
+    func getUser(for id: Int) async -> User? {
+        guard let url = URL(string: "\(authBaseUrl)/\(id)") else { return nil }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }
+
+            let user = try JSONDecoder().decode(User.self, from: data)
+            return user
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
     static var preview: UserViewModel {
         let vm = UserViewModel()
         vm.user = User.preview

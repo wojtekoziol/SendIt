@@ -5,7 +5,7 @@
 //  Created by Wojciech Kozioł on 25/10/2024.
 //
 
-import Foundation
+import SwiftUI
 
 struct Package: Codable, Identifiable {
     let id: Int
@@ -19,6 +19,20 @@ struct Package: Codable, Identifiable {
     let courierId: Int
     let pickupCode: Int
     let receiverId: Int?
+
+    private init(id: Int, receiverFirstName: String, receiverLastName: String, streetId: Int, senderId: Int, weight: Double, maxSize: Double, status: PackageStatus, courierId: Int, pickupCode: Int, receiverId: Int?) {
+        self.id = id
+        self.receiverFirstName = receiverFirstName
+        self.receiverLastName = receiverLastName
+        self.streetId = streetId
+        self.senderId = senderId
+        self.weight = weight
+        self.maxSize = maxSize
+        self.status = status
+        self.courierId = courierId
+        self.pickupCode = pickupCode
+        self.receiverId = receiverId
+    }
 
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -53,9 +67,11 @@ struct Package: Codable, Identifiable {
     func isReceiver(userId: Int) -> Bool {
         userId == receiverId
     }
+
+    static let preview = Package(id: 54321, receiverFirstName: "Wojtek", receiverLastName: "Kozioł", streetId: 0, senderId: 1, weight: 0.3, maxSize: 12.5, status: .inTransit, courierId: 1, pickupCode: 3241, receiverId: 0)
 }
 
-enum PackageStatus: Codable {
+enum PackageStatus: Codable, CustomStringConvertible {
     case created
     case inTransit
     case pickupPoint
@@ -68,6 +84,24 @@ enum PackageStatus: Codable {
         case 2: self = .pickupPoint
         case 3: self = .delivered
         default: self = .created
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .created: return "Created"
+        case .inTransit: return "In Transit"
+        case .pickupPoint: return "Pickup Point"
+        case .delivered: return "Delivered"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .created: return .blue
+        case .inTransit: return .green
+        case .pickupPoint: return .yellow
+        case .delivered: return .red
         }
     }
 }

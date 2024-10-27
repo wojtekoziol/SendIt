@@ -14,12 +14,31 @@ struct PackagesView: View {
     @State private var packageVM = PackageViewModel()
     @State private var showingAddSheet = false
 
+
+    var receivePackages: [Package] {
+        guard let userId = userVM.user?.id else { return packageVM.userPackages }
+        return packageVM.userPackages.filter { $0.isReceiver(userId: userId) }
+    }
+
+    var sentPackages: [Package] {
+        guard let userId = userVM.user?.id else { return packageVM.userPackages }
+        return packageVM.userPackages.filter { !$0.isReceiver(userId: userId) }
+    }
+
     var body: some View {
         if let user = userVM.user {
             NavigationStack {
                 List {
-                    ForEach(packageVM.userPackages) { package in
-                        Text(String(package.id))
+                    Section("Receive") {
+                        ForEach(receivePackages) { package in
+                            PackageRowView(package: package)
+                        }
+                    }
+
+                    Section("Sent") {
+                        ForEach(sentPackages) { package in
+                            PackageRowView(package: package)
+                        }
                     }
                 }
                 .navigationTitle("Packages")

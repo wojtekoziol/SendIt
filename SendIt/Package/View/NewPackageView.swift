@@ -64,6 +64,7 @@ struct NewPackageView: View {
                     ToolbarItem(placement: .primaryAction) {
                         Button("Create") {
                             guard let streetId, let weight = Double(weight), let maxSize = Double(maxSize)  else { return }
+                            guard receiverPhone != user.phoneNumber else { return }
 
                             Task {
                                 await packageVM.createPackage(senderId: user.id, receiverFirstName: receiverFirstName, receiverLastName: receiverLastName, receiverPhone: receiverPhone, streetId: streetId, weight: weight, maxSize: maxSize)

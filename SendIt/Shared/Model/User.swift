@@ -35,5 +35,5 @@ struct User: Codable, Identifiable {
         case isCourier = "is_courier"
     }
 
-    static let preview = User(id: 1, email: "name@mail.com", phoneNumber: "791234567", isCourier: true)
+    static let preview = User(id: 0, email: "name@mail.com", phoneNumber: "791234567", isCourier: true)
 }
