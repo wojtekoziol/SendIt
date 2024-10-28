@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Package: Codable, Comparable, Identifiable {
+struct Package: Codable, Identifiable {
     let id: Int
     let receiverFirstName: String
     let receiverLastName: String
@@ -62,10 +62,6 @@ struct Package: Codable, Comparable, Identifiable {
         case courierId = "courier_id"
         case pickupCode = "pickup_code"
         case receiverId = "receiver_id"
-    }
-
-    static func < (lhs: Package, rhs: Package) -> Bool {
-        lhs.status < rhs.status
     }
 
     func isReceiver(userId: Int) -> Bool {

@@ -23,6 +23,24 @@ struct CourierView: View {
                 }
                 .navigationTitle("Packages to deliver")
             }
+            .alert("Enter pickup code", isPresented: $courierVM.showingPickupCodeAlert) {
+                TextField("Pickup code", text: $courierVM.pickupCode)
+                    .keyboardType(.numberPad)
+                    .onChange(of: courierVM.pickupCode) { _, newValue in
+                        if newValue.count <= 4 {
+                            courierVM.pickupCode = newValue
+                        }
+                    }
+
+                Button("OK") {
+                    Task {
+                        await courierVM.markPackageAsDelivered()
+                        await courierVM.fetchPackages(for: user.id)
+                    }
+                }
+
+                Button("Cancel", role: .cancel) { }
+            }
             .task {
                 await courierVM.fetchPackages(for: user.id)
             }

@@ -11,9 +11,12 @@ import Foundation
     private let packageBaseUrl = "http://localhost:3000/package"
     
     private(set) var packages = [Package]()
+    private var packageToDeliver: Package?
+    var showingPickupCodeAlert = false
+    var pickupCode = ""
 
     var sortedPackages: [Package] {
-        packages.sorted { $0.streetId < $1.streetId }
+        packages.sorted { $0.id < $1.id }
     }
 
     func fetchPackages(for userId: Int) async {
@@ -33,8 +36,13 @@ import Foundation
         }
     }
 
-    func changePackageStatus(to status: PackageStatus, for package: Package) async {
-        guard let url = URL(string: "\(packageBaseUrl)/\(package.id)/\(status.statusId)") else { return }
+    func changePackageStatus(to status: PackageStatus, for package: Package, pickupCode: String? = nil) async {
+        if status == .delivered && pickupCode == nil {
+            showPickupCodeAlert(for: package)
+            return
+        }
+
+        guard let url = URL(string: "\(packageBaseUrl)/\(package.id)/\(status.statusId)/\(pickupCode ?? "null")") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"
@@ -48,8 +56,22 @@ import Foundation
 
             packages.removeAll { $0.id == package.id }
             packages.append(updatedPackage)
+
+            return
         } catch {
             print("Error: \(error.localizedDescription)")
+            return 
         }
+    }
+
+    private func showPickupCodeAlert(for package: Package) {
+        pickupCode = ""
+        packageToDeliver = package
+        showingPickupCodeAlert = true
+    }
+
+    func markPackageAsDelivered() async {
+        guard let packageToDeliver, pickupCode.count == 4 else { return }
+        await changePackageStatus(to: .delivered, for: packageToDeliver, pickupCode: pickupCode)
     }
 }

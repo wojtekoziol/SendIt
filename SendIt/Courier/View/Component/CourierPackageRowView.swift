@@ -20,7 +20,6 @@ struct CourierPackageRowView: View {
 
     init(package: Package) {
         self.package = package
-
         self._packageStatus = State(initialValue: package.status)
     }
 
@@ -31,6 +30,9 @@ struct CourierPackageRowView: View {
                     .bold()
 
                 Text(email)
+
+                Text("Package ID: \(package.id)")
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -41,7 +43,8 @@ struct CourierPackageRowView: View {
                         .tag(status)
                 }
             }
-            .onChange(of: packageStatus) { _, newValue in
+            .onChange(of: packageStatus) { oldValue, newValue in
+                if newValue == .delivered { packageStatus = oldValue }
                 Task {
                     await courierVM.changePackageStatus(to: newValue, for: package)
                 }

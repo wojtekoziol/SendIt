@@ -27,6 +27,7 @@ struct PackageRowView: View {
             }
 
             Text("Package ID: \(package.id)")
+                .foregroundStyle(.secondary)
 
             HStack {
                 Text("\(package.status)")
