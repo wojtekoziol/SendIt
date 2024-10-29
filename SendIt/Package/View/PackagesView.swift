@@ -41,6 +41,11 @@ struct PackagesView: View {
                         }
                     }
                 }
+                .refreshable {
+                    Task {
+                        await packageVM.fetchUserPackages(userId: user.id)
+                    }
+                }
                 .navigationTitle("Packages")
                 .toolbar {
                     Button("Add", systemImage: "plus") {

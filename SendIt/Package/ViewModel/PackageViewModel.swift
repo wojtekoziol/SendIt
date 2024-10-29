@@ -29,8 +29,8 @@ import Foundation
         }
     }
 
-    func createPackage(senderId: Int, receiverFirstName: String, receiverLastName: String, receiverPhone: String, streetId: Int, weight: Double, maxSize: Double) async {
-        guard let url = URL(string: "\(packageBaseUrl)/\(senderId)/\(receiverFirstName)/\(receiverLastName)/\(receiverPhone)/\(streetId)/\(weight)/\(maxSize)") else { return }
+    func createPackage(senderId: Int, receiverFirstName: String, receiverLastName: String, receiverPhone: String, streetId: Int, streetNo: Int, apartmentNo: Int?, weight: Double, maxSize: Double) async {
+        guard let url = URL(string: "\(packageBaseUrl)/\(senderId)/\(receiverFirstName)/\(receiverLastName)/\(receiverPhone)/\(streetId)/\(streetNo)/\(apartmentNo.toNullableString())/\(weight)/\(maxSize)") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

@@ -17,8 +17,25 @@ struct NewPackageView: View {
     @State private var receiverLastName = ""
     @State private var receiverPhone = ""
     @State private var streetId: Int?
+    @State private var streetNo = ""
+    @State private var apartmentNo = ""
     @State private var weight = ""
     @State private var maxSize = ""
+
+    var isFormValid: Bool {
+        guard let user = userVM.user else { return false }
+
+        if receiverPhone == user.phoneNumber { return false }
+        if receiverPhone.count != 9 { return false }
+
+        if receiverFirstName.trimmingCharacters(in: .whitespaces).isEmpty || receiverLastName.trimmingCharacters(in: .whitespaces).isEmpty { return false }
+
+        if streetId == nil || streetNo.isEmpty { return false }
+
+        if weight.isEmpty || maxSize.isEmpty { return false }
+
+        return true
+    }
 
     var body: some View {
         if let user = userVM.user {
@@ -31,7 +48,9 @@ struct NewPackageView: View {
 
                         TextField("Receivers phone", text: $receiverPhone)
                             .keyboardType(.phonePad)
+                    }
 
+                    Section("Street details") {
                         Picker("Street", selection: $streetId) {
                             Text("No street selected").tag(nil as Int?)
 
@@ -43,13 +62,23 @@ struct NewPackageView: View {
                         .task {
                             await streetsVM.fetchStreets()
                         }
+
+                        HStack {
+                            TextField("Street no", text: $streetNo)
+                                .keyboardType(.numberPad)
+
+                            Text("/")
+
+                            TextField("Apartment no", text: $apartmentNo)
+                                .keyboardType(.numberPad)
+                        }
                     }
 
                     Section("Package details") {
-                        TextField("Weight", text: $weight)
+                        TextField("Weight (kg)", text: $weight)
                             .keyboardType(.numberPad)
 
-                        TextField("Max size", text: $maxSize)
+                        TextField("Max size (cm)", text: $maxSize)
                             .keyboardType(.numberPad)
                     }
                 }
@@ -63,15 +92,17 @@ struct NewPackageView: View {
 
                     ToolbarItem(placement: .primaryAction) {
                         Button("Create") {
-                            guard let streetId, let weight = Double(weight), let maxSize = Double(maxSize)  else { return }
                             guard receiverPhone != user.phoneNumber else { return }
 
+                            guard let streetId, let streetNo = Int(streetNo), let weight = Double(weight), let maxSize = Double(maxSize) else { return }
+
                             Task {
-                                await packageVM.createPackage(senderId: user.id, receiverFirstName: receiverFirstName, receiverLastName: receiverLastName, receiverPhone: receiverPhone, streetId: streetId, weight: weight, maxSize: maxSize)
+                                await packageVM.createPackage(senderId: user.id, receiverFirstName: receiverFirstName, receiverLastName: receiverLastName, receiverPhone: receiverPhone, streetId: streetId, streetNo: streetNo, apartmentNo: apartmentNo.toOptionalInt(), weight: weight, maxSize: maxSize)
 
                                 dismiss()
                             }
                         }
+                        .disabled(!isFormValid)
                     }
                 }
             }

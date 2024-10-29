@@ -42,7 +42,8 @@ import Foundation
             return
         }
 
-        guard let url = URL(string: "\(packageBaseUrl)/\(package.id)/\(status.statusId)/\(pickupCode ?? "null")") else { return }
+        let urlString = "\(packageBaseUrl)/\(package.id)/\(status.statusId)/\(pickupCode ?? "null")"
+        guard let url = URL(string: urlString) else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"

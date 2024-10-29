@@ -21,14 +21,19 @@ struct CourierView: View {
                     }
                     .environment(courierVM)
                 }
+                .refreshable {
+                    Task {
+                        await courierVM.fetchPackages(for: user.id)
+                    }
+                }
                 .navigationTitle("Packages to deliver")
             }
             .alert("Enter pickup code", isPresented: $courierVM.showingPickupCodeAlert) {
                 TextField("Pickup code", text: $courierVM.pickupCode)
                     .keyboardType(.numberPad)
-                    .onChange(of: courierVM.pickupCode) { _, newValue in
-                        if newValue.count <= 4 {
-                            courierVM.pickupCode = newValue
+                    .onChange(of: courierVM.pickupCode) { oldValue, newValue in
+                        if newValue.count > 4 {
+                            courierVM.pickupCode = oldValue
                         }
                     }
 

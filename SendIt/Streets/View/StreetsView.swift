@@ -25,6 +25,11 @@ struct StreetsView: View {
                     Text(street.name)
                 }
             }
+            .refreshable {
+                Task {
+                    await streetsVM.fetchStreets()
+                }
+            }
             .navigationTitle("Streets")
             .toolbar {
                 Button("Add", systemImage: "plus") {

@@ -45,7 +45,7 @@ struct CourierPackageRowView: View {
             }
             .onChange(of: packageStatus) { oldValue, newValue in
                 if newValue == .delivered { packageStatus = oldValue }
-                Task {
+                Task {                    
                     await courierVM.changePackageStatus(to: newValue, for: package)
                 }
             }
