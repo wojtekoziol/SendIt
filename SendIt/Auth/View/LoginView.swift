@@ -20,6 +20,15 @@ struct LoginView: View {
         register ? "Register" : "Login"
     }
 
+    var isFormValid: Bool {
+        if email.isEmpty || password.count < 6 { return false }
+
+        if !email.localizedStandardContains("@") || !email.localizedStandardContains(".") { return false }
+        if phoneNumber.count != 9 { return false }
+
+        return true
+    }
+
     var body: some View {
         VStack {
             Text(mainText)
@@ -35,6 +44,11 @@ struct LoginView: View {
             if register {
                 TextField("Phone number", text: $phoneNumber)
                     .keyboardType(.phonePad)
+                    .onChange(of: phoneNumber) { oldValue, newValue in
+                        if newValue.count > 9 {
+                            phoneNumber = oldValue
+                        }
+                    }
 
                 Toggle("Register as a courier", isOn: $asCourier)
             }
@@ -49,6 +63,7 @@ struct LoginView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            .disabled(!isFormValid)
 
             Button(register ? "Already have an account?" : "Create an account") {
                 register.toggle()

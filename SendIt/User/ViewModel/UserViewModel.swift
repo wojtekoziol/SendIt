@@ -63,6 +63,10 @@ import Foundation
         }
     }
 
+    func logout() {
+        user = nil
+    }
+
     static var preview: UserViewModel {
         let vm = UserViewModel()
         vm.user = User.preview

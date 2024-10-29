@@ -48,6 +48,11 @@ struct NewPackageView: View {
 
                         TextField("Receivers phone", text: $receiverPhone)
                             .keyboardType(.phonePad)
+                            .onChange(of: receiverPhone) { oldValue, newValue in
+                                if newValue.count > 9 {
+                                    receiverPhone = oldValue
+                                }
+                            }
                     }
 
                     Section("Street details") {

@@ -31,6 +31,11 @@ struct NavigationView: View {
                             Label("Streets", systemImage: "map")
                         }
                 }
+
+                ProfileView()
+                    .tabItem {
+                        Label("Profile", systemImage: "person")
+                    }
             }
             .environment(streetsVM)
         }
