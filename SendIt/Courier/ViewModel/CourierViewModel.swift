@@ -8,12 +8,37 @@
 import Foundation
 
 @Observable class CourierViewModel {
+    enum AlertType {
+        case deliver
+        case pickupPoint
+
+        var alertTitle: String {
+            switch self {
+            case .deliver:
+                "Enter pickup code"
+            case .pickupPoint:
+                "Enter pickup point id"
+            }
+        }
+
+        var textFieldHint: String {
+            switch self {
+            case .deliver:
+                "Pickup code"
+            case .pickupPoint:
+                "Pickup point id"
+            }
+        }
+    }
+
     private let packageBaseUrl = "http://localhost:3000/package"
     
     private(set) var packages = [Package]()
-    private var packageToDeliver: Package?
-    var showingPickupCodeAlert = false
-    var pickupCode = ""
+
+    private var cachedPackage: Package?
+    private(set) var alertType = AlertType.deliver
+    var showingInputAlert = false
+    var alertInput = ""
 
     var sortedPackages: [Package] {
         packages.sorted { $0.id < $1.id }
@@ -36,14 +61,10 @@ import Foundation
         }
     }
 
-    func changePackageStatus(to status: PackageStatus, for package: Package, pickupCode: String? = nil) async {
-        if status == .delivered && pickupCode == nil {
-            showPickupCodeAlert(for: package)
-            return
-        }
+    func changePackageStatus(to status: PackageStatus, for package: Package) async {
+        guard ![PackageStatus.pickupPoint, PackageStatus.delivered].contains(status) else { return }
 
-        let urlString = "\(packageBaseUrl)/\(package.id)/\(status.statusId)/\(pickupCode ?? "null")"
-        guard let url = URL(string: urlString) else { return }
+        guard let url = URL(string: "\(packageBaseUrl)/\(package.id)/\(status.statusId)") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"
@@ -65,14 +86,36 @@ import Foundation
         }
     }
 
-    private func showPickupCodeAlert(for package: Package) {
-        pickupCode = ""
-        packageToDeliver = package
-        showingPickupCodeAlert = true
+    func showInputAlert(for package: Package, type: AlertType) {
+        alertType = type
+        alertInput = ""
+        cachedPackage = package
+        showingInputAlert = true
     }
 
-    func markPackageAsDelivered() async {
-        guard let packageToDeliver, pickupCode.count == 4 else { return }
-        await changePackageStatus(to: .delivered, for: packageToDeliver, pickupCode: pickupCode)
+    func changeCachedPackageStatus() async {
+        guard let cachedPackage, !alertInput.isEmpty else { return }
+
+        let endpoint = alertType == .deliver ? "deliver" : "pickup"
+        guard let url = URL(string: "\(packageBaseUrl)/\(endpoint)/\(cachedPackage.id)/\(alertInput)") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return }
+
+            let updatedPackage = try JSONDecoder().decode(Package.self, from: data)
+
+            packages.removeAll { $0.id == cachedPackage.id }
+            packages.append(updatedPackage)
+
+            return
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return
+        }
     }
 }

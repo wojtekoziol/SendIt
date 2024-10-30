@@ -17,6 +17,7 @@ struct CourierPackageRowView: View {
     @State private var email = "Unknown"
     @State private var streetName = "Unknown street"
     @State private var packageStatus: PackageStatus
+    @State private var changedToPrevState = false
 
     init(package: Package) {
         self.package = package
@@ -48,9 +49,26 @@ struct CourierPackageRowView: View {
                 }
             }
             .onChange(of: packageStatus) { oldValue, newValue in
-                if newValue == .delivered { packageStatus = oldValue }
-                Task {                    
-                    await courierVM.changePackageStatus(to: newValue, for: package)
+                if changedToPrevState {
+                    changedToPrevState = false
+                    return
+                }
+
+                print("Package status changed from \(oldValue) to \(newValue).")
+                if [PackageStatus.delivered, .pickupPoint].contains(newValue) {
+                    changedToPrevState = true
+                    packageStatus = oldValue
+                }
+
+                switch newValue {
+                case .pickupPoint:
+                    courierVM.showInputAlert(for: package, type: .pickupPoint)
+                case .delivered:
+                    courierVM.showInputAlert(for: package, type: .deliver)
+                default:
+                    Task {
+                        await courierVM.changePackageStatus(to: newValue, for: package)
+                    }
                 }
             }
         }
