@@ -23,10 +23,14 @@ struct CourierPackageRowView: View {
         self._packageStatus = State(initialValue: package.status)
     }
 
+    var getStreetName: String {
+        "\(streetName) \(package.streetNo)" + (package.apartmentNo == nil ? "" : "/\(package.apartmentNo!)")
+    }
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(streetName)
+                Text(getStreetName)
                     .bold()
 
                 Text(email)

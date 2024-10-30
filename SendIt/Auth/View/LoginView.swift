@@ -24,7 +24,7 @@ struct LoginView: View {
         if email.isEmpty || password.count < 6 { return false }
 
         if !email.localizedStandardContains("@") || !email.localizedStandardContains(".") { return false }
-        if phoneNumber.count != 9 { return false }
+        if register && phoneNumber.count != 9 { return false }
 
         return true
     }

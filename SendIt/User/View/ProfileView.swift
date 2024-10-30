@@ -15,6 +15,7 @@ struct ProfileView: View {
             NavigationStack {
                 VStack {
                     Text(user.isCourier ? "Courier" : "User").bold()
+                    Text("ID: ") + Text(String(user.id)).bold()
                     Text("Phone number: ") + Text(user.phoneNumber).bold()
                     Text("Email: ") + Text(user.email).bold()
                 }
